@@ -70,7 +70,7 @@ public class Factory { //основной класс
         cost = Products.findMaxCost(Software.SoftwareCopy.PricesList(wares)); //расчет максимальной цены
         System.out.println("Максимальная цена: " + cost);
 
-        System.out.println("\nСписок аппаратных средств.");
+        System.out.println("\nСписок.");
         Software.SoftwareCopy.SoftwareInfo(wares); //вывод списка
     }
 
