@@ -1,5 +1,5 @@
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.ArrayList; //для динамического массива
+import java.util.Scanner; //для сканера
 
 public class Factory { //основной класс
     public static void main(String[] args) { //основной блок кода. без него программа работать не будет
@@ -58,6 +58,8 @@ public class Factory { //основной класс
                     System.out.println("Такой опции нет.");
                     break;
             }
+            System.out.println("Добавить еще один продукт? (да/нет)");
+            addProducts = scanner.next();
         } while (addProducts.equalsIgnoreCase("да"));
 
         System.out.println("-----------------------------------");
@@ -95,7 +97,7 @@ public class Factory { //основной класс
             soft.downloadAndUpdate(); //обновление ПО
         }
 
-        System.out.println("Создать резервную копию проекта? (да/нет)");
+        System.out.println("Создать резервную копию ПО? (да/нет)");
         String backup = scanner.next();
 
         if (backup.equalsIgnoreCase("да"))
@@ -206,7 +208,7 @@ class Software extends Products { //классу software передаются �
         // Пример: имитация процесса резервного копирования
         try {
             Thread.sleep(3000); // Имитация процесса резервного копирования. оно проходит 3 секунды
-            System.out.println("Резервное копирование завершено.");
+            System.out.println("Резервное копирование завершено.\n");
         } catch (InterruptedException e) {
             e.printStackTrace(); //на всякий случай, если поток прервется
         }
@@ -216,8 +218,16 @@ class Software extends Products { //классу software передаются �
             for (var item : wares) //перебор в массиве с ПО
             {
                 System.out.println("-------------------------------------");
-                System.out.println("Название ПО: " + item.Name + "\nПредварительная цена: " + item.Price
-                        + "\nНаличие обновлений: " + item.Update);
+                if (item.SoftwareSupported == true)
+                {
+                    System.out.println("Название: " + item.Name + "\nПредварительная цена: " + item.Price
+                            + "\nНаличие ПО: " + item.SoftwareSupported + "\nНаличие обновлений: " + item.Update);
+                }
+                else
+                {
+                    System.out.println("Название: " + item.Name + "\nПредварительная цена: " + item.Price
+                            + "\nНаличие ПО: " + item.SoftwareSupported);
+                }
             }
         }
 
