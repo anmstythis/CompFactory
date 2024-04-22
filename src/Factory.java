@@ -132,6 +132,14 @@ public class Factory { //основной класс
         {
             soft.downloadAndUpdate(); //обновление ПО
         }
+
+        System.out.println("Создать резервную копию проекта? (да/нет)");
+        String backup = scanner.next();
+
+        if (backup.equalsIgnoreCase("да"))
+        {
+            soft.backupData(); //сохранение резервной копии ПО
+        }
     }
 }
 
