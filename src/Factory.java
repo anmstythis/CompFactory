@@ -5,83 +5,73 @@ public class Factory { //основной класс
     public static void main(String[] args) { //основной блок кода. без него программа работать не будет
         Scanner scanner = new Scanner(System.in); //создание сканера
         ArrayList<Software> wares = new ArrayList<>(); //динамический массив в данными либо о ПО, либо об АС
-
+        String addProducts = "да"; //для добавления в
         System.out.println("ДОБРО ПОЖАЛОВАТЬ НА КОМПЬЮТЕРНЫЙ ЗАВОД");
-        System.out.println("---------------------------------------");
-        System.out.println("Вы рассматриваете: \n1. ПО \n2. Аппаратное средство ?");
-        char option = scanner.next().charAt(0); //переменная для выбора опции
 
-        String proceed = "да"; //по умолчанию стоит "да", чтобы будущие циклы смогли запуститься
-        switch(option)
+        do
         {
-            case '1': //ПО
-                do
-                {
-                    SoftWare(scanner, wares); //создание ПО
-                    System.out.println("Добавить еще одно ПО? (да/нет)");
-                    proceed = scanner.next();
-                } while(proceed.equalsIgnoreCase("да")); //цикл будет продолжаться до тех пор, пока не будет написано что-то помимо "да"
+            System.out.println("---------------------------------------");
+            System.out.println("Вы рассматриваете: \n1. ПО \n2. Аппаратное средство ?");
+            char option = scanner.next().charAt(0); //переменная для выбора опции
 
-                System.out.println("-----------------------------------");
-                double cost = Software.calculateTotalCost(Software.SoftwareCopy.PricesList(wares)); //расчет общей цены
-                System.out.println("Общая цена ПО: " + cost);
-
-                cost = Software.calculateAverageCost(Software.SoftwareCopy.PricesList(wares)); //расчет средней цены
-                System.out.println("Средняя цена ПО: " + cost);
-
-                cost = Software.findMaxCost(Software.SoftwareCopy.PricesList(wares)); //расчет максимальной цены
-                System.out.println("Максимальная цена ПО: " + cost);
-
-                System.out.println("\nСписок ПО.");
-                Software.SoftwareCopy.SoftwareInfo(wares); //вывод списка ПО
-                break;
-
-            case '2': //аппаратное обеспечение
-                String compName; //для названия аппаратного средства
-                double compPrice; //для предварительной цены АС
-                String isSoftware; //проверка, есть ли ПО в АС
-
-                do
-                {
-                    System.out.println("Введите название аппаратного средства.");
-                    compName = scanner.next();
-                    System.out.println("Введите предварительную цену аппартного обеспечения.");
-                    compPrice = scanner.nextDouble();
-                    System.out.println("В него встроено ПО? (да/нет)");
-                    isSoftware = scanner.next();
-
-                    if (isSoftware.equalsIgnoreCase("да"))
+            String proceed = "да"; //по умолчанию стоит "да", чтобы будущие циклы смогли запуститься
+            switch(option)
+            {
+                case '1': //ПО
+                    do
                     {
-                        Products hardWare = new Products(compName, compPrice, true); //создание АС
-                        SoftWare(hardWare, scanner, wares); //привязка АС к ПО
-                    }
-                    else
+                        SoftWare(scanner, wares); //создание ПО
+                        System.out.println("Добавить еще одно ПО? (да/нет)");
+                        proceed = scanner.next();
+                    } while(proceed.equalsIgnoreCase("да")); //цикл будет продолжаться до тех пор, пока не будет написано что-то помимо "да"
+                    break;
+
+                case '2': //аппаратное обеспечение
+                    String compName; //для названия аппаратного средства
+                    double compPrice; //для предварительной цены АС
+                    String isSoftware; //проверка, есть ли ПО в АС
+
+                    do
                     {
-                        Software hardWare = new Software(compName, compPrice, false, false); //создание АС без привязки к ПО
-                        wares.add(hardWare); //добавление созданного АС в созданный раннее массив (отведенный для продуктов)
-                    }
-                    System.out.println("Добавить еще одно аппаратное средство? (да/нет)");
-                    proceed = scanner.next();
-                } while(proceed.equalsIgnoreCase("да")); //цикл будет продолжаться до тех пор, пока не будет написано что-то помимо "да"
+                        System.out.println("Введите название аппаратного средства.");
+                        compName = scanner.next();
+                        System.out.println("Введите предварительную цену аппартного обеспечения.");
+                        compPrice = scanner.nextDouble();
+                        System.out.println("В него встроено ПО? (да/нет)");
+                        isSoftware = scanner.next();
 
-                System.out.println("-----------------------------------");
-                cost = Products.calculateTotalCost(Software.SoftwareCopy.PricesList(wares)); //расчет общей цены
-                System.out.println("Общая цена: " + cost);
+                        if (isSoftware.equalsIgnoreCase("да"))
+                        {
+                            Products hardWare = new Products(compName, compPrice, true); //создание АС
+                            SoftWare(hardWare, scanner, wares); //привязка АС к ПО
+                        }
+                        else
+                        {
+                            Software hardWare = new Software(compName, compPrice, false, false); //создание АС без привязки к ПО
+                            wares.add(hardWare); //добавление созданного АС в созданный раннее массив (отведенный для продуктов)
+                        }
+                        System.out.println("Добавить еще одно аппаратное средство? (да/нет)");
+                        proceed = scanner.next();
+                    } while(proceed.equalsIgnoreCase("да")); //цикл будет продолжаться до тех пор, пока не будет написано что-то помимо "да"
+                    break;
+                default:
+                    System.out.println("Такой опции нет.");
+                    break;
+            }
+        } while (addProducts.equalsIgnoreCase("да"));
 
-                cost = Products.calculateAverageCost(Software.SoftwareCopy.PricesList(wares)); //расчет средней цены
-                System.out.println("Средняя цена: " + cost);
+        System.out.println("-----------------------------------");
+        double cost = Products.calculateTotalCost(Software.SoftwareCopy.PricesList(wares)); //расчет общей цены
+        System.out.println("Общая цена: " + cost);
 
-                cost = Products.findMaxCost(Software.SoftwareCopy.PricesList(wares)); //расчет максимальной цены
-                System.out.println("Максимальная цена: " + cost);
+        cost = Products.calculateAverageCost(Software.SoftwareCopy.PricesList(wares)); //расчет средней цены
+        System.out.println("Средняя цена: " + cost);
 
-                System.out.println("\nСписок аппаратных средств.");
-                Software.SoftwareCopy.SoftwareInfo(wares); //вывод списка
-                break;
-            default:
-                System.out.println("Такой опции нет.");
-                break;
+        cost = Products.findMaxCost(Software.SoftwareCopy.PricesList(wares)); //расчет максимальной цены
+        System.out.println("Максимальная цена: " + cost);
 
-        }
+        System.out.println("\nСписок аппаратных средств.");
+        Software.SoftwareCopy.SoftwareInfo(wares); //вывод списка
     }
 
     private static void SoftWare(Scanner scanner, ArrayList<Software> wares) //метод для добавления нового ПО
