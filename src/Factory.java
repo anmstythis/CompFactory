@@ -1,11 +1,15 @@
+import java.io.IOException;
 import java.util.ArrayList; //для динамического массива
+import java.util.InputMismatchException;
 import java.util.Scanner; //для сканера
+import java.util.logging.Level;
 
 public class Factory { //основной класс
-    public static void main(String[] args) { //основной блок кода. без него программа работать не будет
+    public static void main(String[] args) throws IOException { //основной блок кода. без него программа работать не будет
         Scanner scanner = new Scanner(System.in); //создание сканера
         ArrayList<Software> wares = new ArrayList<>(); //динамический массив в данными либо о ПО, либо об АС
-        String addProducts = "да"; //для добавления в
+        String addProducts = "да"; //для добавления продуктов
+
         System.out.println("ДОБРО ПОЖАЛОВАТЬ НА КОМПЬЮТЕРНЫЙ ЗАВОД");
 
         do
@@ -28,15 +32,24 @@ public class Factory { //основной класс
 
                 case '2': //аппаратное обеспечение
                     String compName; //для названия аппаратного средства
-                    double compPrice; //для предварительной цены АС
+                    double compPrice = 0; //для предварительной цены АС
                     String isSoftware; //проверка, есть ли ПО в АС
 
                     do
                     {
                         System.out.println("Введите название аппаратного средства.");
                         compName = scanner.next();
-                        System.out.println("Введите предварительную цену аппартного обеспечения.");
-                        compPrice = scanner.nextDouble();
+                        try
+                        {
+                            System.out.println("Введите предварительную цену аппаратного обеспечения.");
+                            compPrice = scanner.nextDouble();
+                        }
+                        catch(InputMismatchException e)
+                        {
+                            Log hardwareLog = new Log("hardware logs.txt");
+                            hardwareLog.logger.log(Level.SEVERE, "Введено не число.");
+                        }
+
                         System.out.println("В него встроено ПО? (да/нет)");
                         isSoftware = scanner.next();
 
@@ -62,30 +75,48 @@ public class Factory { //основной класс
             addProducts = scanner.next();
         } while (addProducts.equalsIgnoreCase("да"));
 
-        System.out.println("-----------------------------------");
-        double cost = Products.calculateTotalCost(Software.SoftwareCopy.PricesList(wares)); //расчет общей цены
-        System.out.println("Общая цена: " + cost);
+        try
+        {
+            System.out.println("-----------------------------------");
+            double cost = Products.calculateTotalCost(Software.SoftwareCopy.PricesList(wares)); //расчет общей цены
+            System.out.println("Общая цена: " + cost);
 
-        cost = Products.calculateAverageCost(Software.SoftwareCopy.PricesList(wares)); //расчет средней цены
-        System.out.println("Средняя цена: " + cost);
+            cost = Products.calculateAverageCost(Software.SoftwareCopy.PricesList(wares)); //расчет средней цены
+            System.out.println("Средняя цена: " + cost);
 
-        cost = Products.findMaxCost(Software.SoftwareCopy.PricesList(wares)); //расчет максимальной цены
-        System.out.println("Максимальная цена: " + cost);
+            cost = Products.findMaxCost(Software.SoftwareCopy.PricesList(wares)); //расчет максимальной цены
+            System.out.println("Максимальная цена: " + cost);
 
-        System.out.println("\nСписок.");
-        Software.SoftwareCopy.SoftwareInfo(wares); //вывод списка
+            System.out.println("\nСписок.");
+            Software.SoftwareCopy.SoftwareInfo(wares); //вывод списка
+        }
+        catch(IndexOutOfBoundsException e)
+        {
+            Log hardwareLog = new Log("logs.txt");
+            hardwareLog.logger.log(Level.WARNING, "Список пустой.");
+        }
+
     }
 
-    private static void SoftWare(Scanner scanner, ArrayList<Software> wares) //метод для добавления нового ПО
+    private static void SoftWare(Scanner scanner, ArrayList<Software> wares) throws IOException //метод для добавления нового ПО
     {
         String softName; //для названия ПО
-        double softPrice; //для предварительной цены ПО
+        double softPrice = 0; //для предварительной цены ПО
         boolean result; //для проверки доступности обновления ПО
 
         System.out.println("Введите название ПО.");
         softName = scanner.next();
         System.out.println("Введите предварительную цену ПО. Если оно бесплатное, введите 0.");
-        softPrice = scanner.nextDouble();
+
+        try
+        {
+            softPrice = scanner.nextDouble();
+        }
+        catch (SecurityException | InputMismatchException e)
+        {
+            Log softwareLog = new Log("software logs.txt");
+            softwareLog.logger.log(Level.SEVERE, "Введено не число.");
+        }
 
         result = Software.checkForUpdates(scanner);
         Software soft = new Software(softName, softPrice, true, result);
@@ -106,14 +137,23 @@ public class Factory { //основной класс
         }
     }
 
-    private static void SoftWare(Products hardWare, Scanner scanner, ArrayList<Software> wares) //метод для добавления ПО при АС
+    private static void SoftWare(Products hardWare, Scanner scanner, ArrayList<Software> wares) throws IOException //метод для добавления ПО при АС
     {
-        double softPrice; //для предварительной цены ПО
+        double softPrice = 0; //для предварительной цены ПО
         boolean result; //для проверки доступности обновления ПО
 
         System.out.println("Введите предварительную цену ПО. Если оно бесплатное, введите 0.");
-        softPrice = scanner.nextDouble();
-        hardWare.Price += softPrice; //добавление стоимости ПО к стоимости АС
+
+        try
+        {
+            softPrice = scanner.nextDouble();
+            hardWare.Price += softPrice; //добавление стоимости ПО к стоимости АС
+        }
+        catch (SecurityException | InputMismatchException e)
+        {
+            Log softhardLog = new Log("hardware with software logs.txt");
+            softhardLog.logger.log(Level.SEVERE, "Введено не число.");
+        }
 
         result = Software.checkForUpdates(scanner);
         Software soft = new Software(hardWare.Name, softPrice, true, result);
@@ -141,7 +181,7 @@ class Products{
 
     public boolean SoftwareSupported; //поддерживает ли продукт ПО
 
-    public Products(String name, double price, boolean isSupported) //конструктор для создания объектов (продуктов)
+    public Products(String name, double price, boolean isSupported) throws IOException //конструктор для создания объектов (продуктов)
     {
         this.Name = name;
         this.Price = price;
@@ -178,7 +218,7 @@ class Software extends Products { //классу software передаются �
 
     public boolean Update; //переменная для обновления
 
-    public Software(String name, double price, boolean isSupported, boolean update) //конструктор для создания объектов
+    public Software(String name, double price, boolean isSupported, boolean update) throws IOException //конструктор для создания объектов
     {
         super(name, price, isSupported); //использование объектов класса products
         this.Update = update;
@@ -191,26 +231,28 @@ class Software extends Products { //классу software передаются �
     }
 
     // Функция для загрузки и установки обновлений ПО
-    public void downloadAndUpdate() {
+    public void downloadAndUpdate() throws IOException {
         System.out.println("\nЗагрузка и установка обновлений в ПО '" + Name + "'...");
         // Пример: имитация загрузки и установки
         try {
             Thread.sleep(2000); // Имитация загрузки. она проходит 2 секунды
             System.out.println("Обновления в ПО '" + Name + "' успешно установлены.\n");
         } catch (InterruptedException e) {
-            e.printStackTrace(); //на всякий случай, если поток прервется
+            Log softwareLog = new Log("software logs.txt");
+            softwareLog.logger.log(Level.FINEST, "Не удалось обновить ПО."); //на всякий случай, если поток прервется
         }
     }
 
     // Функция для резервного копирования данных ПО
-    public void backupData() {
+    public void backupData() throws IOException {
         System.out.println("Начало резервного копирования данных...");
         // Пример: имитация процесса резервного копирования
         try {
             Thread.sleep(3000); // Имитация процесса резервного копирования. оно проходит 3 секунды
             System.out.println("Резервное копирование завершено.\n");
         } catch (InterruptedException e) {
-            e.printStackTrace(); //на всякий случай, если поток прервется
+            Log softwareLog = new Log("software logs.txt");
+            softwareLog.logger.log(Level.FINEST, "Не удалось совершить резервное копирование данных."); //на всякий случай, если поток прервется
         }
     }
     public static class SoftwareCopy {
